@@ -1,0 +1,5 @@
+name= #1BAA50 to #51C7D2
+icon= #15B556
+slogan= #36B68E
+container=#C9EFC7
+background= #F5F5F5

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='images/delvarg_logo/ringed-planet.svg') }}"
+      type="image/x-icon"
+    />
+    <title>{% block title %}DELVARG base{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bootstrap-5.3.2-dist/css/bootstrap.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white py-4 fixed-top">
+      <div class="container">
+        <a
+          class="navbar-brand d-flex justify-content-between align-items-center order-lg-0"
+          href="{{ url_for('views.home') }}"
+        >
+          <img
+            src="{{ url_for('static', filename='images/delvarg_logo/ringed-planet.svg') }}"
+            alt="site icon"
+          />
+          <span class="text-uppercase fw-lighter ms-2">DELVARG</span>
+        </a>
+
+        <div class="order-lg-2 nav-btns">
+          {% if user.is_authenticated and not user.id == 1 %}
+          <a href="{{ url_for('views.cart') }}">
+            <button type="button" class="btn position-relative">
+              <i class="fa fa-shopping-cart"></i>
+              {% if cart_count != 0 %}
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge bg-primary"
+                >{{ cart_count }}</span
+              >
+              {% endif %}
+            </button></a
+          >
+
+          <a href="{{ url_for('views.heart') }}"
+            ><button type="button" class="btn position-relative">
+              <i class="fa fa-heart"></i>
+              {% if heart_count != 0 %}
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge bg-primary"
+                >{{ heart_count }}</span
+              >
+              {% endif %}
+            </button></a
+          >
+
+          <a href="{{ url_for('auth.logout') }}"
+            ><button type="button" class="btn position-relative">
+              <i class="fa fa-right-from-bracket"></i></button
+          ></a>
+
+          {% elif user.id == 1 %}
+
+          <a href="{{ url_for('views.admin') }}"
+            ><button type="button" class="btn position-relative">
+              <i class="fa fa-edit"></i></button
+          ></a>
+          <a href="{{ url_for('auth.logout') }}"
+            ><button type="button" class="btn position-relative">
+              <i class="fa fa-right-from-bracket"></i></button
+          ></a>
+
+          {% else %}
+
+          <a href="{{ url_for('auth.login') }}"
+            ><button type="button" class="btn position-relative">
+              <i class="fa fa-right-to-bracket"></i></button
+          ></a>
+
+          <a href="{{ url_for('auth.sign_up') }}"
+            ><button type="button" class="btn position-relative">
+              <i class="fa fa-user-plus"></i></button
+          ></a>
+
+          {% endif %}
+        </div>
+
+        {% if not nobars %}
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse order-lg-1" id="navMenu">
+          <ul class="navbar-nav mx-auto text-center">
+            <li class="nav-item px-2 py-2">
+              <a class="nav-link text-uppercase text-dark" href="#header"
+                >inicio</a
+              >
+            </li>
+            <li class="nav-item px-2 py-2">
+              <a class="nav-link text-uppercase text-dark" href="#collection"
+                >colección</a
+              >
+            </li>
+            <li class="nav-item px-2 py-2">
+              <a class="nav-link text-uppercase text-dark" href="#special"
+                >especiales</a
+              >
+            </li>
+            <li class="nav-item px-2 py-2">
+              <a class="nav-link text-uppercase text-dark" href="#blogs"
+                >blogs</a
+              >
+            </li>
+            <li class="nav-item px-2 py-2">
+              <a class="nav-link text-uppercase text-dark" href="{{ url_for('views.faq') }}"
+                >faq</a
+              >
+            </li>
+            <li class="nav-item px-2 py-2">
+              <a class="nav-link text-uppercase text-dark" href="#about"
+                >sobre nosotros</a
+              >
+            </li>
+          </ul>
+        </div>
+        {% else %}
+        <div class="collapse navbar-collapse order-lg-1" id="navMenu">
+          <ul class="navbar-nav mx-auto text-center">
+            <li class="nav-item px-2 py-3">
+              <a class="text-uppercase text-white"
+                >codigo promo: surfeando :D</a
+              >
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </nav>
+
+    <!-- flashing -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+
+    <div
+      id="flash-container"
+      class="sticky-flash"
+      style="display: none; padding-top: 50px"
+    >
+      <div id="flash-message" class="alert alert-{{ category }}">
+        <span id="flash-text">{{ message }}</span>
+        <button id="close-flash" class="close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+
+    {% endfor %} {% endif %} {% endwith %}
+
+    <!-- content -->
+    <div class="container">{% block content %} {% endblock %}</div>
+
+    <!-- footer -->
+    <footer class="bg-light py-5">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-8 col-lg-4">
+            <a
+              class="text-uppercase text-decoration-none brand"
+              href="index.html"
+              >Delvarg</a
+            >
+            <p class="text-white text-muted mt-3">
+              Para cualquier consulta o comentario, no dudes en ponerte en
+              contacto con nosotros. Estamos aquí para ayudarte en cada paso de
+              tu viaje.
+            </p>
+          </div>
+
+          <div class="col-md-8 col-lg-4">
+            <h5 class="fw-light mb-3">Contáctanos</h5>
+            <div
+              class="d-flex justify-content-start align-items-start my-2 text-muted"
+            >
+              <span class="me-3">
+                <i class="fas fa-map-marked-alt"></i>
+              </span>
+              <span class="fw-light"> *direccion*. </span>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start my-2 text-muted"
+            >
+              <span class="me-3">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <span class="fw-light"> inversiones_delvarg@gmail.com </span>
+            </div>
+            <div
+              class="d-flex justify-content-start align-items-start my-2 text-muted"
+            >
+              <span class="me-3">
+                <i class="fas fa-phone-alt"></i>
+              </span>
+              <span class="fw-light"> +0424 271 7296 </span>
+            </div>
+          </div>
+
+          <div class="col-md-8 col-lg-4">
+            <h5 class="fw-light mb-3">Síguenos</h5>
+            <div>
+              <ul class="list-unstyled d-flex">
+                <li>
+                  <a
+                    href="https://www.facebook.com/MegaMundo.es"
+                    class="text-white text-decoration-none text-muted fs-4 me-4"
+                  >
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://twitter.com/inversiones_delvarg"
+                    class="text-white text-decoration-none text-muted fs-4 me-4"
+                  >
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.instagram.com/inversionesdelvarg/"
+                    class="text-white text-decoration-none text-muted fs-4 me-4"
+                  >
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- scripts -->
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='js/jquery-3.7.1.js') }}"
+    ></script>
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='bootstrap-5.3.2-dist/js/bootstrap.min.js') }}"
+    ></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='js/script.js') }}"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,121 @@
+{% extends "base.html" %} {% block title %}Me gustan{% endblock %} {% block
+    content %}
+
+    <div class="title text-center" style="padding-top: 170px">
+        <h2 class="position-relative d-inline-block">
+          Productos que te han gustado
+        </h2>
+    </div>
+      
+    <div class="row g-0 mb-5">
+      <div
+        class="d-flex flex-wrap justify-content-center mt-5 filter-button-group"
+      >
+        <button
+          type="button"
+          class="btn m-1 text-dark active-filter-btn"
+          data-filter="*"
+        >
+          Todo
+        </button>
+        <button
+          type="button"
+          class="btn m-1 text-dark"
+          data-filter=".textileria"
+        >
+          Textilería
+        </button>
+        <button type="button" class="btn m-1 text-dark" data-filter=".alimento">
+          Alimentos
+        </button>
+        <button
+          type="button"
+          class="btn m-1 text-dark"
+          data-filter=".tecnologia"
+        >
+          Tecnología
+        </button>
+        <button type="button" class="btn m-1 text-dark" data-filter=".oferta">
+          Ofertas
+        </button>
+      </div>
+
+      <div class="collection-list mt-4 row gx-0 gy-3">
+        {% for product in products%} {% set i = product.id %}
+        <div
+          class="col-md-6 col-lg-4 col-xl-3 p-2 {{ product.filter }} {% if product.deal != 0 %} oferta {% endif %}"
+        >
+          <a name="form-section{{ i }}"></a>
+          <div class="collection-img position-relative">
+            <img
+              src="data:image/jpeg;base64,{{ product.image }} "
+              style="height: 300px; width: 300px"
+            />
+
+            <form
+              method="POST"
+              action="{{ url_for('views.toggle_heart', product_id=product.id) }}#form-section{{ i }}"
+            >
+              <input
+                type="hidden"
+                name="product_id_heart"
+                value="{{ product.id }}"
+              />
+              <span
+                class="position-absolute d-flex align-items-center justify-content-center text-primary fs-2"
+                style="top: 12px; left: 17px"
+              >
+                <button
+                  type="submit"
+                  class="btn-outline-none heart-icon"
+                  style="
+                    color: #e5345b;
+                    border-color: rgb(255, 255, 255, 0);
+                    background-color: rgb(255, 255, 255, 0);
+                  "
+                  data-product-id="{{ product.id }}"
+                >
+                  {% if product.heart_info and product.heart_info.heart_state ==
+                  "filled" %}
+                  <i class="fas fa-heart heart-icon-filled"></i>
+                  {% elif product.heart_info and product.heart_info.heart_state
+                  == "cracked" %}
+                  <i class="fas fa-heart-crack heart-icon-crack"></i>
+                  {% else %}
+                  <i class="fa-regular fa-heart heart-icon-empty"></i>
+                  {% endif %}
+                </button>
+              </span>
+            </form>
+
+            {% if product.deal != 0 %}
+            <span
+              class="position-absolute bg-primary text-white d-flex align-items-center justify-content-center deal-thing"
+              >oferta! -{{ product.deal }}%
+            </span>
+            {% endif %}
+          </div>
+          <div class="text-center">
+            <p class="text-capitalize my-1 mt-3">{{ product.product }}</p>
+
+            {% set line = 'text-decoration: line-through;' if product.deal != 0
+            %}
+
+            <span class="fw-bold no_longer">
+              {% if product.deal != 0 %}
+              <span style="text-decoration: line-through; margin-right: 10px"
+                >$ {{ product.price }}</span
+              >
+              <span style="color: #e5345b; font-size: 20px"
+                >$ {{ product.new_price }}</span
+              >
+              {% else %} $ {{ product.price }} {% endif %} </span
+            >
+            
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+{% endblock %}

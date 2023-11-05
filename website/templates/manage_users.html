@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block title %}Editar producto{% endblock %} {%
+block content %}
+
+<div class="container mb-5">
+  <h2 class="text-center my-4" style="padding-top: 140px">
+    Gestionar usuarios
+  </h2>
+
+  {% for user in users %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{ user.username }}</h5>
+      <p class="card-text">Email: {{ user.email }}</p>
+      <form method="POST">
+        <input
+              type="hidden"
+              id="user_id"
+              name="user_id"
+              value="{{ user.id }}"
+            />
+        <button type="submit" class="btn btn-danger">Eliminar usuario</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

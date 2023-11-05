@@ -1,0 +1,54 @@
+{% extends "base.html" %} 
+{% block title %}Editar producto{% endblock %} 
+{% block content %}
+
+<div class="container" style="padding-top: 140px;"></div>
+<h2 class="text-center my-4">Editar productos</h2>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <form method="POST" enctype="multipart/form-data" class="py-2">
+            <input type="hidden" name="product_id" id="product_id" value="{{ product.id }}">
+            
+            <div class="mb-3">
+                <label for="product_image" class="form-label">Imagen del producto:</label><br>
+                <img src="data:image/jpeg;base64,{{ product.image }}" class="img-fluid mb-2" style="height: 200px; width: auto" alt="Producto" />
+                <input type="file" class="form-control" id="product_image" name="product_image">
+            </div>
+            
+            <div class="mb-3">
+                <label for="product_name" class="form-label">Nombre del producto:</label>
+                <input type="text" class="form-control" id="product_name" name="product_name" value="{{ product.product }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="product_category" class="form-label">Categoría del producto:</label>
+                <select class="form-select" id="product_filter" name="product_filter">
+                    <option value="textileria" {% if product.filter == 'textileria' %}selected{% endif %}>Textilería</option>
+                    <option value="alimento" {% if product.filter == 'alimento' %}selected{% endif %}>Alimentos</option>
+                    <option value="tecnologia" {% if product.filter == 'tecnologia' %}selected{% endif %}>Tecnología</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="product_price" class="form-label">Precio del producto:</label>
+                <input type="number" class="form-control" id="product_price" name="product_price" value="{{ product.price }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="product_deal" class="form-label">Descuento (%):</label>
+                <input type="number" class="form-control" id="product_deal" name="product_deal" value="{{ product.deal }}">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </form>
+        <form method="POST" action="{{ url_for('views.delete_product') }}" class="pb-5">
+            <input type="hidden" name="product_id" id="product_id" value="{{ product.id }}">
+            <button type="submit" class="btn btn-danger">Eliminar producto</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
