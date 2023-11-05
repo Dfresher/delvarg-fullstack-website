@@ -1,0 +1,39 @@
+# delvarg-fullstack-website
+Project files of a full stack website for Delvarg, a Venezuelan business. The website is being developed using Python, Flask, SQL Alchemy, Jinja, HTML, CSS, Bootstrap, JavaScript and jQuery.
+
+Archivos de proyecto de un sitio web full stack para Delvarg, una empresa venezolana. El sitio web se está desarrollando utilizando Python, Flask, SQL Alchemy, Jinja, HTML, CSS, Bootstrap, JavaScript y jQuery.
+
+Para ser capaz de correr apropiadamente esta aplicación necesitara instalar ciertas dependencias:
+  Python (https://www.python.org/downloads/)
+  Flask (Entra en la terminal de Windows o VScode y escribe 'pip install flask')
+  Flask Login (Entra en la terminal de Windows o VScode y escribe 'pip install flask-login')
+  La implementación de SQL Alchemy en Flask (Entra en la terminal de Windows o VScode y escribe 'pip install flask-sqlalchemy')
+
+Procedemos a hacer un resumen de como funciona:
+   Primero, los archivos:
+       //".git", ".vscode" son carpetas con configuraciones generadas automaticamente, asi como ".gitattributes", ninguno creado por nosotros.
+       En "instance" se encuentra la base de datos en su totalidad, hecha con SQLite3 por SQL Alchemy automaticamente atravez de python.
+       "website" es la carpeta mas importante en donde se encuentran la mayoria de los archivos de la pagina web.
+       El archivo "main.py" es una necesidad para ejecutar otro archivo de python por el nombre de "__init__.py", el cual vendria siendo la aplicación web de lleno
+            Dentro de "website" tenemos:
+              Primeramente, cuatro archivos de suma importancia:
+              "__init__.py", en donde se encuentra la aplicación web como mencione antes. 
+              "auth.py", el cual contiene rutas para el registro y la autenticación del usuario en general.
+              "models.py", el cual se encarga de especificar la .schema, o las tablas, de la base de datos en SQL Alchemy.
+              Y "views.py", donde decidimos contener todas las otras rutas hacia otras partes de la pagina ademas de codigo extra para que ciertas funciones de la pagina se ejecuten correctamente.
+              //"__pycache__", un archivo con configuraciones especificas de python, no fueron creados por nosotros.
+              La carpeta "static", en donde se encuentran todos los elementos o archivos que seran estaticos por la duración de la ejecución del codigo.
+                   Dentro de "static" nos encontramos con diferentes carpetas:
+                     "bootstrap-5.3.2-dist", la implementación de bootstrap descargada directamente de la pagina oficial, gracias a ella somos capaces de customizar la apariencia de la pagina sin usar tanto css.
+                     "css", la casa de un unico archivo de css, "styles.css", que controla la resposiveness de la pagina y un poco de su apariencia.
+                     "js", la cual controla algunas animaciones puntuales con sus archivos: "jquery-3.7.1.js" y "script.js", en su mayoria, codigo estandar y facil de manipular.
+                     E "images", una carpeta que se explica a si misma con su nombre. 
+                     Vale la pena notar que la mayoria de la imagenes en esta carpeta no son referenciadas directamente por la pagina.
+                     Esto es porque optamos por guardar las imagenes subidas a la pagina directamente en el archivo de la base de datos en lugar de guardar su directorio o ruta. 
+                     Para facil acceso y prueba de la pagina, seguiran estando en esta carpeta hasta que el desarrollo de la misma sea concretado.
+              Y la carpeta "templates", el directorio que contiene todo el codigo HTML y Jinja necesario para la ejecucion correcta de la pagina.
+                   Esta carpeta contiene bastantes archivos HTML, pero los mas importantes son:
+                     "base.html", que sirve como base de todas las otras paginas, es decir, contiene elementos que todas las demas paginas deben tener; la navbar, el footer, etc.
+                     Y "admin.html", accesible solo con la cuenta de un administrador, nos permite agregar productos a la base de datos, editar cualquiera de sus atributos, y administrar los usuarios registrados.
+                     
+              
