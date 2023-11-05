@@ -1,0 +1,17 @@
+-mejor resposiveness, especialmente en home.html
+
+-que el usuario sea capaz de cambiar su contraseña en caso de no recordarla. 
+    solo necesitaria recordar su correo y usuario. 
+      si no lo recuerda esta jodido. 
+        si, esto seria un riesgo de seguridad, no importa lo suficiente :)
+
+-sistema de etiquetas dinamicas
+    un administrador seria capaz de controlar mas precisamente un producto y como, o donde, se muestra.
+
+-agregar paginas distintas para cada rama de la empresa, dejando home.html como una landing page y solo con productos populares
+    bastante complejo
+      pero se veria y sentiria bastante bien
+
+-???
+
+-profit
