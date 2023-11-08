@@ -83,3 +83,33 @@ def sign_up():
             return redirect(url_for('views.home'))
         
     return render_template("sign_up.html", user=current_user, nobars=nobars)
+
+@auth.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    nobars = True
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+
+        if not email or not password1 or not password2:
+            flash('Por favor, complete todos los campos.', 'danger')
+            return render_template("change_password.html", nobars=nobars, user=current_user)
+
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            flash('No se encontró ningún usuario con ese correo electrónico.', 'danger')
+            return render_template("change_password.html", nobars=nobars, user=current_user)
+
+        if password1 != password2:
+            flash('Las contraseñas no coinciden. Inténtalo de nuevo.', 'danger')
+            return render_template("change_password.html", nobars=nobars, user=current_user)
+
+        password=generate_password_hash(password1, method='scrypt', salt_length=16)
+        user.password = password
+        db.session.commit()
+
+        flash('Contraseña cambiada exitosamente. Inicia sesión con tu nueva contraseña.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template("change_password.html", nobars=nobars, user=current_user)

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="shortcut icon"
-      href="{{ url_for('static', filename='images/delvarg_logo/ringed-planet.svg') }}"
+      href="{{ url_for('static', filename='images/delvarg_logo.png') }}"
       type="image/x-icon"
     />
     <title>{% block title %}DELVARG base{% endblock %}</title>
@@ -35,8 +35,7 @@
           href="{{ url_for('views.home') }}"
         >
           <img
-            src="{{ url_for('static', filename='images/delvarg_logo/ringed-planet.svg') }}"
-            alt="site icon"
+            src="{{ url_for('static', filename='images/delvarg_logo_black.png') }}"
           />
           <span class="text-uppercase fw-lighter ms-2">DELVARG</span>
         </a>
@@ -179,23 +178,18 @@
     <div class="container">{% block content %} {% endblock %}</div>
 
     <!-- footer -->
-    <footer class="bg-light py-5">
+    <footer class="py-5" style="background-color: rgb(226, 226, 226);">
       <div class="container">
         <div class="row g-4">
           <div class="col-md-8 col-lg-4">
-            <a
-              class="text-uppercase text-decoration-none brand"
-              href="index.html"
-              >Delvarg</a
-            >
+            <h5 class="fw-light mb-3">Delvarg</h5>
             <p class="text-white text-muted mt-3">
               Para cualquier consulta o comentario, no dudes en ponerte en
-              contacto con nosotros. Estamos aquí para ayudarte en cada paso de
-              tu viaje.
+              contacto con nosotros. Estamos aquí para ayudarte en cada paso de tu viaje.
             </p>
           </div>
 
-          <div class="col-md-8 col-lg-4">
+          <div class="col-md-8 col-lg-5 px-5">
             <h5 class="fw-light mb-3">Contáctanos</h5>
             <div
               class="d-flex justify-content-start align-items-start my-2 text-muted"
@@ -203,7 +197,8 @@
               <span class="me-3">
                 <i class="fas fa-map-marked-alt"></i>
               </span>
-              <span class="fw-light"> *direccion*. </span>
+              <span class="fw-light">Calle principal, Via Mataruca, Sector la Alcabala, Lagunetica, Municipio Guaicaipuro, <br>
+                Estado Bolivariano de Miranda, Venezuela. </span>
             </div>
             <div
               class="d-flex justify-content-start align-items-start my-2 text-muted"
@@ -211,7 +206,7 @@
               <span class="me-3">
                 <i class="fas fa-envelope"></i>
               </span>
-              <span class="fw-light"> inversiones_delvarg@gmail.com </span>
+              <span class="fw-light">invdelvarg28@gmail.com</span>
             </div>
             <div
               class="d-flex justify-content-start align-items-start my-2 text-muted"
@@ -223,7 +218,7 @@
             </div>
           </div>
 
-          <div class="col-md-8 col-lg-4">
+          <div class="col-md-8 col-lg-2">
             <h5 class="fw-light mb-3">Síguenos</h5>
             <div>
               <ul class="list-unstyled d-flex">
@@ -237,18 +232,18 @@
                 </li>
                 <li>
                   <a
-                    href="https://twitter.com/inversiones_delvarg"
-                    class="text-white text-decoration-none text-muted fs-4 me-4"
-                  >
-                    <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-                <li>
-                  <a
                     href="https://www.instagram.com/inversionesdelvarg/"
                     class="text-white text-decoration-none text-muted fs-4 me-4"
                   >
                     <i class="fab fa-instagram"></i>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://wa.me/message/ZJJ2XVA67OTQN1"
+                    class="text-white text-decoration-none text-muted fs-4 me-4"
+                  >
+                    <i class="fab fa-whatsapp"></i>
                   </a>
                 </li>
               </ul>
@@ -257,6 +252,7 @@
         </div>
       </div>
     </footer>
+    
 
     <!-- scripts -->
     <script

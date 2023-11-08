@@ -3,8 +3,7 @@ content %}
 </div>
 <header
   id="header"
-  class="vh-100 carousel slide mb-5"
-  style="padding-top: 50px"
+  class="carousel slide mb-5"
   data-bs-ride="carousel"
 >
   <style>
@@ -21,9 +20,9 @@ content %}
         alt="Surfeate la vida"
       />
       <div class="carousel-caption d-none d-md-block">
-        <h2 class="text-white text-with-shadow">Bienvenid@!</h2>
+        <h2 class="text-white text-with-shadow">¡Bienvenidos!</h2>
         <h1 class="text-uppercase py-2 fw-bold text-white text-with-shadow">
-          surféate la vida!
+          ¡surféate la vida!
         </h1>
         {% set url = url_for('auth.login') if user.is_authenticated else
         '#collection' %}
