@@ -1,33 +1,58 @@
 {% extends "base.html" %} {% block title %}Administrador{% endblock %} {% block
-    content %}
+content %}
 
 <h1 class="mt-2 mb-3" style="padding-top: 160px">Panel de administrador</h1>
-<div class="row text-center mb-5">
-    <div class="col-md-4 my-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Añadir un nuevo producto</h5>
-                <a href="{{ url_for('views.add_product') }}" class="btn btn-primary">Ir a la página</a>
-            </div>
-        </div>
+<div class="row text-center mb-5 align-items-center justify-content-center">
+  <div class="col-md-4 my-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Administrar paginas</h5>
+        <a href="{{ url_for('views.manage_pages') }}" class="btn btn-primary"
+          >Ir a la página</a
+        >
+      </div>
     </div>
-    <div class="col-md-4 my-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Editar productos existentes</h5>
-                <a href="{{ url_for('views.edit_product') }}" class="btn btn-primary">Ir a la página</a>
-            </div>
-        </div>
+  </div>
+  <div class="col-md-4 my-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Editar etiquetas</h5>
+        <a href="{{ url_for('views.tags') }}" class="btn btn-primary"
+          >Ir a la página</a
+        >
+      </div>
     </div>
-    <div class="col-md-4 my-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Gestionar usuarios</h5>
-                <a href="{{ url_for('views.manage_users') }}" class="btn btn-primary">Ir a la página</a>
-            </div>
-        </div>
+  </div>
+  <div class="col-md-4 my-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Gestionar usuarios</h5>
+        <a href="{{ url_for('views.manage_users') }}" class="btn btn-primary"
+          >Ir a la página</a
+        >
+      </div>
     </div>
+  </div>
+  <div class="col-md-4 my-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Añadir un nuevo producto</h5>
+        <a href="{{ url_for('views.add_product') }}" class="btn btn-primary"
+          >Ir a la página</a
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 my-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Editar productos existentes</h5>
+        <a href="{{ url_for('views.edit_product') }}" class="btn btn-primary"
+          >Ir a la página</a
+        >
+      </div>
+    </div>
+  </div>
 </div>
-
 
 {% endblock %}

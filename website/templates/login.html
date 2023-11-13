@@ -1,22 +1,51 @@
-{% extends "base.html" %} {% block title %}Iniciar sesión{% endblock %} {% block content %}
+{% extends "base.html" %} {% block title %}Iniciar sesión{% endblock %} {% block
+content %}
 <div class="row justify-content-center" style="padding-top: 180px">
   <div class="col-md-6">
-      <h1 class="text-center mb-4">Iniciar sesión</h1>
-      <form method="POST">          
-          <div class="mb-4">
-              <label for="email" class="form-label">Correo electrónico</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-          </div>
-          <div class="mb-2">
-              <label for="password" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="password" name="password" required>
-          </div>
-          <a href="{{ url_for('auth.sign_up') }}" style="text-decoration: none; font-size: 15px;"><span style="color :rgb(0, 0, 0);">¿No tienes una cuenta aún?</span> ¡Crea una ahora mismo!</a><br>
-          <a href="{{ url_for('auth.change_password') }}" style="text-decoration: none; font-size: 15px;"><span style="color :rgb(0, 0, 0);">¿Se te olvido tu contraseña?</span> Haz clic aquí para cambiarla.</a>
-          <div class="text-center">
-            <button type="submit" class="btn btn-primary mt-5" style="margin-bottom: 60px">Aceptar</button>
-          </div>
-      </form>
+    <h1 class="text-center mb-4">Iniciar sesión</h1>
+    <form method="POST">
+      <div class="mb-4">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          required
+        />
+      </div>
+      <div class="mb-2">
+        <label for="password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          required
+        />
+      </div>
+      <a
+        href="{{ url_for('auth.sign_up') }}"
+        style="text-decoration: none; font-size: 15px"
+        ><span style="color: rgb(0, 0, 0)">¿No tienes una cuenta aún?</span>
+        ¡Crea una ahora mismo!</a
+      ><br />
+      <a
+        href="{{ url_for('auth.change_password') }}"
+        style="text-decoration: none; font-size: 15px"
+        ><span style="color: rgb(0, 0, 0)">¿Se te olvido tu contraseña?</span>
+        Haz clic aquí para cambiarla.</a
+      >
+      <div class="text-center">
+        <button
+          type="submit"
+          class="btn btn-primary mt-5"
+          style="margin-bottom: 60px"
+        >
+          Aceptar
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

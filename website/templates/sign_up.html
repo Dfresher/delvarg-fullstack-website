@@ -2,29 +2,60 @@
 content %}
 <div class="row justify-content-center" style="padding-top: 180px">
   <div class="col-md-6">
-      <h1 class="text-center mb-4">Registrate</h1>
-      <form method="POST">
-          <div class="mb-4">
-              <label for="username" class="form-label">Usuario</label>
-              <input type="text" class="form-control" id="username" name="username" required>
-          </div>
-          <div class="mb-4">
-              <label for="email" class="form-label">Correo electrónico</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-          </div>
-          <div class="mb-4">
-              <label for="password" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="password1" name="password1" required>
-          </div>
-          <div class="mb-2">
-              <label for="confirm_password" class="form-label">Confirmar contraseña</label>
-              <input type="password" class="form-control" id="password2" name="password2" required>
-          </div>
-          <a href="{{ url_for('auth.login') }}" style="text-decoration: none; font-size: 15px;"><span style="color :rgb(0, 0, 0);">¿Ya tienes una cuenta?</span> Haz clic aquí para iniciar sesión.</a><br>
-          <div class="text-center">
-            <button type="submit" class="btn btn-primary mt-4 mb-5">Aceptar</button>
-          </div>
-      </form>
+    <h1 class="text-center mb-4">Registrate</h1>
+    <form method="POST">
+      <div class="mb-4">
+        <label for="username" class="form-label">Usuario</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password1"
+          name="password1"
+          required
+        />
+      </div>
+      <div class="mb-2">
+        <label for="confirm_password" class="form-label"
+          >Confirmar contraseña</label
+        >
+        <input
+          type="password"
+          class="form-control"
+          id="password2"
+          name="password2"
+          required
+        />
+      </div>
+      <a
+        href="{{ url_for('auth.login') }}"
+        style="text-decoration: none; font-size: 15px"
+        ><span style="color: rgb(0, 0, 0)">¿Ya tienes una cuenta?</span> Haz
+        clic aquí para iniciar sesión.</a
+      ><br />
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary mt-4 mb-5">Aceptar</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

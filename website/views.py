@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from .models import User, Product, Cart, Heart, Tags
 from .auth import admin_id_required
@@ -13,9 +13,10 @@ views = Blueprint("views", __name__)
 @views.route("/")
 def home():
     products = Product.query.all()
+    main_tags = Tags.query.filter(Tags.parent_tag_id.is_(None)).all()
     products_with_images = []
-    cart_count=0
-    heart_count=0
+    cart_count = 0
+    heart_count = 0
 
     if current_user.is_authenticated:
         user_id = current_user.id
@@ -28,11 +29,11 @@ def home():
             cart_count = product_count
         else:
             cart_count = 0
-        
+
         liked_product_count = (
-        db.session.query(func.count(Heart.id))
-        .filter(Heart.user_id == user_id, Heart.heart_state == "filled")
-        .scalar()
+            db.session.query(func.count(Heart.id))
+            .filter(Heart.user_id == user_id, Heart.heart_state == "filled")
+            .scalar()
         )
         if liked_product_count is not None:
             heart_count = liked_product_count
@@ -45,6 +46,7 @@ def home():
             product_copy = product.__class__()
             product_copy.__dict__.update(product.__dict__)
             product_copy.image = b64_image
+            product_copy.price = "{:.2f}".format(product_copy.price)
             product_copy.new_price = "{:.2f}".format(
                 float(product.price * (1 - product.deal / 100))
             )
@@ -67,8 +69,89 @@ def home():
         user=current_user,
         products=products_with_images,
         cart_count=cart_count,
-        heart_count=heart_count
+        heart_count=heart_count,
+        main_tags=main_tags,
     )
+
+
+@views.route("/branches/<int:main_tag_id>")
+def branches(main_tag_id):
+    main_tag = Tags.query.get(main_tag_id)
+
+    if main_tag:
+        products = Product.query.filter(Product.tags_info.contains(main_tag)).all()
+        secondary_tags = Tags.query.filter_by(parent_tag_id=main_tag_id).all()
+
+        products_with_images = []
+        cart_count = 0
+        heart_count = 0
+
+        if current_user.is_authenticated:
+            user_id = current_user.id
+            product_count = (
+                db.session.query(func.sum(Cart.quantity))
+                .filter_by(user_id=user_id)
+                .scalar()
+            )
+            if product_count is not None:
+                cart_count = product_count
+            else:
+                cart_count = 0
+
+            liked_product_count = (
+                db.session.query(func.count(Heart.id))
+                .filter(Heart.user_id == user_id, Heart.heart_state == "filled")
+                .scalar()
+            )
+            if liked_product_count is not None:
+                heart_count = liked_product_count
+            else:
+                heart_count = 0
+
+        for product in products:
+            if product.image:
+                b64_image = base64.b64encode(product.image).decode("utf-8")
+                product_copy = product.__class__()
+                product_copy.__dict__.update(product.__dict__)
+                product_copy.image = b64_image
+                product_copy.price = "{:.2f}".format(product_copy.price)
+                product_copy.new_price = "{:.2f}".format(
+                    float(product.price * (1 - product.deal / 100))
+                )
+
+                if current_user.is_authenticated:
+                    heart_info = Heart.query.filter_by(
+                        user_id=user_id, product_id=product.id
+                    ).first()
+                    if heart_info:
+                        product_copy.heart_info = heart_info
+                    else:
+                        product_copy.heart_info = None
+
+                products_with_images.append(product_copy)
+            else:
+                products_with_images.append(product)
+
+        return render_template(
+            "home.html",
+            user=current_user,
+            products=products_with_images,
+            cart_count=cart_count,
+            heart_count=heart_count,
+            main_tag=main_tag,
+            secondary_tags=secondary_tags,
+        )
+    else:
+        flash("Algo salio mal.", "danger")
+        return redirect(url_for("views.home"))
+
+
+def get_existing_cart_quantity(user_id, product_id):
+    existing_cart_entry = Cart.query.filter_by(
+        user_id=user_id, product_id=product_id
+    ).first()
+
+    return existing_cart_entry.quantity if existing_cart_entry else 0
 
 
 @views.route("/add_to_cart", methods=["POST"])
@@ -77,22 +160,41 @@ def add_to_cart():
     product_id = request.form.get("product_id")
     user_id = current_user.id
     product_quantity = int(request.form.get("product_quantity"))
+    if product_quantity == 0:
+        flash("No hay suficiente cantidad disponible para este producto.", "danger")
+        return redirect(request.referrer)
 
-    existing_cart_entry = Cart.query.filter_by(
-        user_id=user_id, product_id=product_id
-    ).first()
-    if existing_cart_entry:
-        existing_cart_entry.quantity += product_quantity
-    else:
-        cart_entry = Cart(
-            quantity=product_quantity, user_id=user_id, product_id=product_id
+    product = Product.query.get(product_id)
+
+    if product:
+        print(f"Product Quantity: {product.quantity}")
+        print(
+            f"Existing Cart Quantity: {get_existing_cart_quantity(user_id, product_id)}"
         )
-        db.session.add(cart_entry)
+        print(f"Requested Quantity: {product_quantity}")
+        if product.quantity >= (
+            get_existing_cart_quantity(user_id, product_id) + product_quantity
+        ):
+            existing_cart_entry = Cart.query.filter_by(
+                user_id=user_id, product_id=product_id
+            ).first()
 
-    db.session.commit()
+            if existing_cart_entry:
+                existing_cart_entry.quantity += product_quantity
+            else:
+                cart_entry = Cart(
+                    quantity=product_quantity, user_id=user_id, product_id=product_id
+                )
+                db.session.add(cart_entry)
 
-    flash("Producto añadido al carrito!", "success")
-    return redirect(url_for("views.home"))
+            db.session.commit()
+            flash("Producto añadido al carrito!", "success")
+        else:
+            flash("No hay suficiente cantidad disponible para este producto.", "danger")
+    else:
+        flash("Producto no encontrado.", "danger")
+
+    return redirect(request.referrer)
 
 
 @views.route("/delete_from_cart", methods=["POST"])
@@ -105,17 +207,23 @@ def delete_from_cart():
     cart_item = Cart.query.filter_by(user_id=user_id, product_id=product_id).first()
 
     if cart_item:
-        new_quantity = cart_item.quantity - quantity_to_delete
+        if quantity_to_delete > 0:
+            new_quantity = max(cart_item.quantity - quantity_to_delete, 0)
 
-        if new_quantity > 0:
-            cart_item.quantity = new_quantity
-            db.session.commit()
+            if new_quantity > 0:
+                cart_item.quantity = new_quantity
+                db.session.commit()
+            else:
+                db.session.delete(cart_item)
+                db.session.commit()
+
+            flash("Producto eliminado del carrito", "success")
         else:
-            db.session.delete(cart_item)
-            db.session.commit()
+            flash("La cantidad seleccionada para eliminar no es válida", "danger")
+    else:
+        flash("Elemento no encontrado en el carrito", "danger")
 
-    flash("Producto eliminado del carrito", "success")
-    return redirect(url_for("views.cart"))
+    return redirect(request.referrer)
 
 
 @views.route("/cart", methods=["GET", "POST"])
@@ -129,59 +237,80 @@ def cart():
         product_id = request.form.get("product_id")
         product_quantity = int(request.form.get("product_quantity"))
 
-        existing_cart_entry = Cart.query.filter_by(
-            user_id=user_id, product_id=product_id
-        ).first()
+        product = Product.query.get(product_id)
 
-        if existing_cart_entry:
-            existing_cart_entry.quantity += product_quantity
+        if product and product.quantity >= (
+            get_existing_cart_quantity(user_id, product_id) + product_quantity
+        ):
+            existing_cart_entry = Cart.query.filter_by(
+                user_id=user_id, product_id=product_id
+            ).first()
+
+            if existing_cart_entry:
+                existing_cart_entry.quantity += product_quantity
+            else:
+                cart_entry = Cart(
+                    quantity=product_quantity, user_id=user_id, product_id=product_id
+                )
+                db.session.add(cart_entry)
+
+            db.session.commit()
+            flash("Producto añadido al carrito!", "success")
         else:
-            cart_entry = Cart(
-                quantity=product_quantity, user_id=user_id, product_id=product_id
-            )
-            db.session.add(cart_entry)
+            flash("No hay suficiente cantidad disponible para este producto.", "danger")
 
-        db.session.commit()
-        flash("Producto añadido al carrito!", "success")
         return redirect(url_for("views.cart", nobars=nobars))
+
+    main_tags = Tags.query.filter(Tags.parent_tag_id.is_(None)).all()
+
+    cart_entries = Cart.query.filter_by(user_id=user_id).all()
+    product_ids = [entry.product_id for entry in cart_entries]
+
+    products_with_quantities = []
+
+    for cart_entry in cart_entries:
+        if cart_entry.quantity > 0:
+            product = Product.query.get(cart_entry.product_id)
+
+            product_copy = product.__class__(
+                id=product.id,
+                product=product.product,
+                price="{:.2f}".format(product.price),
+                deal=product.deal,
+                quantity=product.quantity,
+                image=base64.b64encode(product.image).decode("utf-8")
+                if product.image
+                else None,
+            )
+
+            product_copy.new_price = "{:.2f}".format(
+                float(product.price * (1 - product.deal / 100))
+            )
+            product_copy.cart_quantity = cart_entry.quantity
+            products_with_quantities.append(product_copy)
+
+            item_price = (
+                float(
+                    product_copy.new_price
+                    if product_copy.deal != 0
+                    else product_copy.price
+                )
+                * cart_entry.quantity
+            )
+            total_price += item_price
 
     total_quantity = (
         db.session.query(func.sum(Cart.quantity)).filter_by(user_id=user_id).scalar()
         or 0
     )
-    
+
     liked_product_count = (
         db.session.query(func.count(Heart.id))
         .filter(Heart.user_id == user_id, Heart.heart_state == "filled")
         .scalar()
-        )
-    
-    if liked_product_count is not None:
-        heart_count = liked_product_count
-    else:
-        heart_count = 0
+    )
 
-    cart_entries = Cart.query.filter_by(user_id=user_id).all()
-    product_ids = [entry.product_id for entry in cart_entries]
-
-    products = Product.query.filter(Product.id.in_(product_ids)).all()
-
-    products_with_quantities = []
-
-    for product, cart_entry in zip(products, cart_entries):
-        if cart_entry.quantity > 0:
-            product_copy = product.__class__()
-            product_copy.__dict__.update(product.__dict__)
-            product_copy.quantity = cart_entry.quantity
-
-            if product_copy.image:
-                b64_image = base64.b64encode(product_copy.image).decode("utf-8")
-                product_copy.image = b64_image
-
-            products_with_quantities.append(product_copy)
-
-            item_price = product.price * cart_entry.quantity
-            total_price += item_price
+    heart_count = liked_product_count if liked_product_count is not None else 0
 
     return render_template(
         "cart.html",
@@ -190,6 +319,7 @@ def cart():
         cart_count=total_quantity,
         heart_count=heart_count,
         total_price=total_price,
+        main_tags=main_tags,
         nobars=nobars,
     )
 
@@ -224,8 +354,16 @@ def toggle_heart(product_id):
 def heart():
     nobars = True
     user_id = current_user.id
-    cart_count = Cart.query.with_entities(func.sum(Cart.quantity)).filter_by(user_id=user_id).scalar() or 0
-    heart_count = Heart.query.filter(Heart.user_id == user_id, Heart.heart_state == "filled").count()
+    main_tags = Tags.query.filter(Tags.parent_tag_id.is_(None)).all()
+    cart_count = (
+        Cart.query.with_entities(func.sum(Cart.quantity))
+        .filter_by(user_id=user_id)
+        .scalar()
+        or 0
+    )
+    heart_count = Heart.query.filter(
+        Heart.user_id == user_id, Heart.heart_state == "filled"
+    ).count()
 
     if request.method == "POST":
         product_id = request.form.get("product_id")
@@ -248,12 +386,10 @@ def heart():
         return redirect(url_for("views.home"))
 
     liked_products = (
-        Product.query
-        .join(Heart, Product.id == Heart.product_id)
+        Product.query.join(Heart, Product.id == Heart.product_id)
         .filter(Heart.user_id == user_id, Heart.heart_state == "filled")
         .all()
     )
-
 
     products_with_images = []
     for product in liked_products:
@@ -267,8 +403,8 @@ def heart():
             )
 
             heart_info = Heart.query.filter_by(
-                    user_id=user_id, product_id=product.id
-                ).first()
+                user_id=user_id, product_id=product.id
+            ).first()
             if heart_info:
                 product_copy.heart_info = heart_info
             else:
@@ -284,6 +420,7 @@ def heart():
         products=products_with_images,
         cart_count=cart_count,
         heart_count=heart_count,
+        main_tags=main_tags,
         nobars=nobars,
     )
 
@@ -302,6 +439,21 @@ def admin():
     return render_template("admin.html", user=current_user, nobars=nobars)
 
 
+@views.route("/get_secondary_tags/<int:main_tag_id>")
+@login_required
+def get_secondary_tags(main_tag_id):
+    main_tag = Tags.query.filter_by(id=main_tag_id).first()
+
+    if main_tag:
+        secondary_tags = main_tag.child_tags
+        secondary_tags_data = [
+            {"id": tag.id, "tag_name": tag.tag_name} for tag in secondary_tags
+        ]
+        return jsonify({"secondary_tags": secondary_tags_data})
+    else:
+        return jsonify({"error": "Main tag not found"}), 404
+
+
 @views.route("/add_product", methods=["GET", "POST"])
 @login_required
 @admin_id_required
@@ -311,16 +463,20 @@ def add_product():
     if request.method == "POST":
         product_image = request.files.get("product_image")
         product_name = request.form.get("product_name")
-        product_filter = request.form.get("product_filter")
+        product_main_tag_id = request.form.get("product_main_tag")
+        product_secondary_tag_id = request.form.get("product_secondary_tag")
         product_price = request.form.get("product_price")
         product_deal = request.form.get("product_deal")
+        product_quantity = request.form.get("product_quantity")
 
         if not product_image:
             flash("Selecciona una imagen.", "danger")
         elif len(product_name) < 2:
             flash("El nombre del producto es muy corto.", "danger")
-        elif len(product_filter) < 2:
-            flash("Filtro inválido.", "danger")
+        elif not product_main_tag_id:
+            flash("Selecciona una etiqueta principal.", "danger")
+        elif not product_secondary_tag_id:
+            flash("Selecciona una etiqueta secundaria.", "danger")
         elif not product_deal.isdigit():
             flash("Descuento inválido.", "danger")
         elif product_price:
@@ -332,7 +488,15 @@ def add_product():
             flash("Precio inválido.", "danger")
 
         if not any(
-            [product_name, product_filter, product_price, product_deal, product_image]
+            [
+                product_name,
+                product_main_tag_id,
+                product_secondary_tag_id,
+                product_price,
+                product_deal,
+                product_image,
+                product_quantity,
+            ]
         ):
             flash("Ningún cambio detectado.", "info")
         else:
@@ -341,21 +505,36 @@ def add_product():
                     image_data = product_image.read()
                     new_product = Product(
                         product=product_name,
-                        filter=product_filter,
                         price=product_price,
                         deal=product_deal,
                         image=image_data,
+                        quantity=product_quantity,
                     )
+
+                    main_tag = Tags.query.filter_by(id=product_main_tag_id).first()
+                    secondary_tag = Tags.query.filter_by(
+                        id=product_secondary_tag_id
+                    ).first()
+
+                    new_product.tags_info.append(main_tag)
+
+                    if secondary_tag:
+                        new_product.tags_info.append(secondary_tag)
+
                     db.session.add(new_product)
                     db.session.commit()
                     flash("Producto agregado correctamente!", category="success")
+
             except Exception as e:
                 flash("Error al agregar el producto: " + str(e), category="danger")
 
         return redirect(url_for("views.add_product"))
 
     else:
-        return render_template("add_product.html", user=current_user, nobars=nobars)
+        main_tags = Tags.query.filter(Tags.parent_tag_id.is_(None)).all()
+        return render_template(
+            "add_product.html", user=current_user, nobars=nobars, main_tags=main_tags
+        )
 
 
 @views.route("/edit_product", methods=["GET", "POST"])
@@ -363,12 +542,15 @@ def add_product():
 @admin_id_required
 def edit_product():
     nobars = True
+
     if request.method == "POST":
         product_name = request.form["product_name"]
-        product_filter = request.form["product_filter"]
+        product_main_tag_id = request.form["product_main_tag"]
+        product_secondary_tag_id = request.form["product_secondary_tag"]
         product_price = request.form["product_price"]
         product_deal = request.form["product_deal"]
         product_id = request.form["product_id"]
+        product_quantity = request.form["product_quantity"]
 
         if "product_image" in request.files:
             product_image = request.files["product_image"]
@@ -378,11 +560,14 @@ def edit_product():
         if len(product_name) < 2:
             flash("El nombre del producto es muy corto.", "danger")
             return redirect(url_for("views.edit_product"))
-        elif len(product_filter) < 2:
-            flash("Filtro invalido.", "danger")
+        elif not product_main_tag_id:
+            flash("Selecciona una etiqueta principal.", "danger")
+            return redirect(url_for("views.edit_product"))
+        elif not product_secondary_tag_id:
+            flash("Selecciona una etiqueta secundaria.", "danger")
             return redirect(url_for("views.edit_product"))
         elif not product_deal.isdigit():
-            flash("Descuento invalido.", "danger")
+            flash("Descuento inválido.", "danger")
             return redirect(url_for("views.edit_product"))
         elif product_price:
             try:
@@ -400,15 +585,24 @@ def edit_product():
             if existing_product:
                 if product_image:
                     existing_product.product = product_name
-                    existing_product.filter = product_filter
                     existing_product.price = product_price
                     existing_product.deal = product_deal
+                    existing_product.quantity = product_quantity
                     existing_product.image = product_image.read()
                 else:
                     existing_product.product = product_name
-                    existing_product.filter = product_filter
                     existing_product.price = product_price
                     existing_product.deal = product_deal
+                    existing_product.quantity = product_quantity
+
+                main_tag = Tags.query.filter_by(id=product_main_tag_id).first()
+                secondary_tag = Tags.query.filter_by(
+                    id=product_secondary_tag_id
+                ).first()
+
+                existing_product.tags_info = [main_tag]
+                if secondary_tag:
+                    existing_product.tags_info.append(secondary_tag)
 
                 db.session.commit()
                 flash("Producto editado correctamente!", category="success")
@@ -417,10 +611,12 @@ def edit_product():
 
         except Exception as e:
             flash("Error al editar el producto: " + str(e), "danger")
+
         return redirect(url_for("views.edit_product"))
 
     else:
         products = Product.query.all()
+        main_tags = Tags.query.filter(Tags.parent_tag_id.is_(None)).all()
         products_with_images = []
         cart_count = 0
 
@@ -451,7 +647,7 @@ def edit_product():
             "edit_product.html",
             user=current_user,
             products=products_with_images,
-            cart_count=cart_count,
+            main_tags=main_tags,
             nobars=nobars,
         )
 
@@ -467,7 +663,7 @@ def delete_product():
     if product:
         Cart.query.filter_by(product_id=product_id).delete()
         Heart.query.filter_by(product_id=product_id).delete()
-        Tags.query.filter_by(product_id=product_id).delete()
+        product.tags_info = []
 
         db.session.delete(product)
         db.session.commit()
@@ -507,3 +703,78 @@ def manage_users():
         return render_template(
             "manage_users.html", users=users, user=current_user, nobars=nobars
         )
+
+
+def get_main_tags():
+    return Tags.query.filter_by(parent_tag_id=None).all()
+
+
+@views.route("/tags", methods=["GET", "POST"])
+@login_required
+@admin_id_required
+def tags():
+    nobars = True
+    if request.method == "POST":
+        if "main_tag" in request.form:
+            main_tag_name = request.form["main_tag"].lower()
+            if (
+                Tags.query.filter_by(tag_name=main_tag_name, parent_tag_id=None).first()
+                is None
+            ):
+                new_main_tag = Tags(tag_name=main_tag_name)
+                db.session.add(new_main_tag)
+                db.session.commit()
+            else:
+                flash("Esa etiqueta ya existe.", "danger")
+
+        elif "secondary_tag" in request.form and "main_tag_id" in request.form:
+            main_tag_id = request.form["main_tag_id"].lower()
+            secondary_tag_name = request.form["secondary_tag"].lower()
+
+            main_tag = Tags.query.get(main_tag_id)
+
+            if main_tag:
+                if (
+                    Tags.query.filter_by(
+                        tag_name=secondary_tag_name, parent_tag=main_tag
+                    ).first()
+                    is None
+                ):
+                    new_secondary_tag = Tags(
+                        tag_name=secondary_tag_name, parent_tag=main_tag
+                    )
+                    db.session.add(new_secondary_tag)
+                    db.session.commit()
+                else:
+                    flash("Esa etiqueta secundaria ya existe.", "danger")
+
+    main_tags = get_main_tags()
+    return render_template(
+        "edit_tags.html", nobars=nobars, user=current_user, main_tags=main_tags
+    )
+
+
+@views.route("/delete_tag/<int:tag_id>")
+@login_required
+@admin_id_required
+def delete_tag(tag_id):
+    try:
+        tag = Tags.query.get(tag_id)
+        if tag:
+            db.session.delete(tag)
+            db.session.commit()
+            flash("Etiqueta eliminada correctamente", "success")
+        else:
+            flash("Etiqueta no encontrada", "danger")
+    except Exception as e:
+        flash("Error al eliminar la etiqueta: " + str(e), "danger")
+
+    return redirect(url_for("views.tags"))
+
+
+@views.route("/manage_pages")
+@login_required
+@admin_id_required
+def manage_pages():
+    nobars = True
+    return render_template("manage_pages.html", user=current_user, nobars=nobars)

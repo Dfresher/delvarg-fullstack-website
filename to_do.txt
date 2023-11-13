@@ -1,8 +1,5 @@
 -mejor resposiveness, especialmente en home.html
 
--sistema de etiquetas dinamicas
-    un administrador seria capaz de controlar mas precisamente un producto y como, o donde, se muestra.
-
 -agregar paginas distintas para cada rama de la empresa, dejando home.html como una landing page y solo con productos populares
     bastante complejo
       pero se veria y sentiria bastante bien

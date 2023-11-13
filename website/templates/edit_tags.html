@@ -1,0 +1,101 @@
+{% extends "base.html" %} {% block title %}Editar etiquetas{% endblock %} {%
+block content %}
+
+<div class="row" style="padding: 170px 0px 100px 0px">
+  <div class="col-md-6">
+    <h3>Añadir etiquetas principales:</h3>
+    <form method="POST" action="{{ url_for('views.tags') }}" class="mb-5">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          style="border-top-left-radius: 25px; border-bottom-left-radius: 25px"
+          name="main_tag"
+          id="main_tag"
+          required
+        />
+        <button class="btn btn-primary" type="submit">Añadir</button>
+      </div>
+    </form>
+
+    <h3 class="mt-4">Añadir etiquetas secundarias:</h3>
+    <form method="POST" action="{{ url_for('views.tags') }}" class="mb-5">
+      <div class="input-group">
+        <select
+          class="form-select text-center text-capitalize"
+          name="main_tag_id"
+          style="
+            border-top-left-radius: 25px;
+            border-bottom-left-radius: 25px;
+            max-width: 200px;
+          "
+          required
+        >
+          {% for main_tag in main_tags %}
+          <option value="{{ main_tag.id }}" class="text-capitalize">
+            {{ main_tag.tag_name }}
+          </option>
+          {% endfor %}
+        </select>
+        <input
+          type="text"
+          class="form-control col-md-6"
+          name="secondary_tag"
+          id="secondary_tag"
+          required
+        />
+        <button
+          class="btn btn-primary col-md-2"
+          type="submit"
+          style="padding: 10px 0px"
+        >
+          Añadir
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-md-6" style="padding-left: 50px">
+    <h3>Etiquetas existentes:</h3>
+    <ul class="list-group" style="width: 350px">
+      {% for main_tag in main_tags %}
+      <li class="list-group-item text-capitalize">
+        {{ main_tag.tag_name }}
+        <a
+          href="{{ url_for('views.delete_tag', tag_id=main_tag.id) }}"
+          class="btn-outline-none"
+          style="
+            color: #e5345b;
+            border-color: rgb(255, 255, 255, 0);
+            background-color: rgb(255, 255, 255, 0);
+            padding-left: 15px;
+          "
+        >
+          <i class="fas fa-trash"></i>
+        </a>
+        <ul class="list-group mt-2">
+          {% for secondary_tag in main_tag.child_tags %}
+          <li class="list-group-item">
+            {{ secondary_tag.tag_name }}
+            <a
+              href="{{ url_for('views.delete_tag', tag_id=secondary_tag.id) }}"
+              class="btn-outline-none"
+              style="
+                color: #e5345b;
+                border-color: rgb(255, 255, 255, 0);
+                background-color: rgb(255, 255, 255, 0);
+                padding-left: 15px;
+              "
+            >
+              <i class="fas fa-trash"></i>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% endblock %}

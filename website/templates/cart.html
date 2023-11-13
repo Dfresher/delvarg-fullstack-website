@@ -1,149 +1,181 @@
 {% extends "base.html" %} {% block title %}Carrito de compras{% endblock %} {%
 block content %}
 
-<div class="title text-center" style="padding-top: 170px">
-  <h2 class="position-relative d-inline-block">
-    Productos en tu carrito de compras
-  </h2>
-</div>
-
-<div class="row g-0 mb-3">
-  <div class="d-flex flex-wrap justify-content-center mt-5 filter-button-group">
-    <button
-      type="button"
-      class="btn m-1 text-dark active-filter-btn"
-      data-filter="*"
-    >
-      Todo
-    </button>
-    <button type="button" class="btn m-1 text-dark" data-filter=".textileria">
-      Textilería
-    </button>
-    <button type="button" class="btn m-1 text-dark" data-filter=".alimento">
-      Alimentos
-    </button>
-    <button type="button" class="btn m-1 text-dark" data-filter=".tecnologia">
-      Tecnología
-    </button>
-    <button type="button" class="btn m-1 text-dark" data-filter=".oferta">
-      Ofertas
-    </button>
+<section id="collection" class="py-5 mt-5">
+  <div class="title text-center" style="padding-top: 70px">
+    <h2 class="position-relative d-inline-block">
+      Productos en tu carrito de compras
+    </h2>
   </div>
 
-  <div class="collection-list mt-4 row gx-0 gy-3">
-    {% for product in products%} {% set i = product.id %}
-    <div
-      class="col-md-6 col-lg-4 col-xl-3 p-2 {{ product.filter }} {% if product.deal != 0 %} oferta {% endif %}"
-    >
-      <a name="form-section{{ i }}"></a>
-      <div class="collection-img position-relative">
-        <img
-          src="data:image/jpeg;base64,{{ product.image }} "
-          class="w-100"
-          style="height: 300px; width: 300px"
-        />
-        {% if product.deal != 0 %}
-        <span
-          class="position-absolute bg-primary text-white d-flex align-items-center justify-content-center deal-thing"
-          >oferta! -{{ product.deal }}%
-        </span>
-        {% endif %}
+  <div class="container">
+    <div class="row g-0">
+      <div
+        class="d-flex flex-wrap justify-content-center mt-3 filter-button-group"
+      >
+        <button
+          type="button"
+          class="btn m-1 text-dark active-filter-btn"
+          data-filter="*"
+        >
+          Todo
+        </button>
+        {% for main_tag in main_tags %}
+        <button
+          type="button"
+          class="btn m-1 text-dark text-capitalize"
+          data-filter=".{{ main_tag.tag_name }}"
+        >
+          {{ main_tag.tag_name }}
+        </button>
+        {% endfor %}
+        <button type="button" class="btn m-1 text-dark" data-filter=".oferta">
+          Ofertas
+        </button>
       </div>
-      <div class="text-center">
-        <p class="text-capitalize my-1 mt-3">
-          {{ product.product }} X
-          <span style="font-weight: bold; color: #e5345b"
-            >{{ product.quantity }}</span
-          >
-        </p>
-        <span class="fw-bold">$ {{ product.price }}</span><br />
 
-        <form
-          method="POST"
-          action="{{ url_for('views.cart') }}#form-section{{ i }}"
+      <div class="collection-list mt-4 row gx-0 gy-3">
+        {% for product in products %} {% set i = product.id %}
+        <div
+          class="col-3 shadow bg-body p-3 m-2 rounded {% for tag in product.tags_info %}{{ tag.tag_name }} {% endfor %} {% if product.deal != 0 %} oferta {% endif %}"
         >
-          <div
-            class="input-group mt-3 mb-2"
-            style="max-width: 200px; margin: auto"
-          >
-            <input
-              type="hidden"
-              id="product_id"
-              name="product_id"
-              value="{{ product.id }}"
+          <a name="form-section{{ i }}"></a>
+          <div class="collection-img position-relative">
+            <img
+              src="data:image/jpeg;base64,{{ product.image }}"
+              style="height: 260px; width: 100%"
+              alt="{{ product.product }}"
             />
-            <button
-              class="btn btn-outline-secondary col-8"
-              type="submit"
-              style="border-radius: 4px"
-            >
-              Comprar
-            </button>
-            <select
-              class="form-select text-center col"
-              aria-label="Default select example"
-              style="border-radius: 4px"
-              id="product_quantity"
-              name="product_quantity"
-            >
-              <option selected value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
-          </div>
-        </form>
 
-        <form
-          method="POST"
-          action="{{ url_for('views.delete_from_cart') }}#form-section{{ i }}"
-        >
-          <div
-            class="input-group mt-2 mb-5"
-            style="max-width: 200px; margin: auto"
-          >
-            <input
-              type="hidden"
-              id="product_id_del"
-              name="product_id_del"
-              value="{{ product.id }}"
-            />
-            <button
-              class="btn btn-outline-secondary col-8"
-              type="submit"
-              style="border-radius: 4px"
+            {% if product.deal != 0 %}
+            <span
+              class="position-absolute bg-primary text-white d-flex align-items-center justify-content-center deal-thing"
             >
-              Eliminar
-            </button>
-            <select
-              class="form-select text-center col"
-              aria-label="Default select example"
-              style="border-radius: 4px"
-              id="product_quantity_del"
-              name="product_quantity_del"
-            >
-              {% for option in range(1, product.quantity + 1) %}
-              <option value="{{ option }}">{{ option }}</option>
-              {% endfor %}
-            </select>
+              Oferta -{{ product.deal }}%
+            </span>
+            {% endif %}
           </div>
-        </form>
+
+          <div class="text-center mt-3">
+            <p class="text-capitalize mb-1">
+              {{ product.product }} X
+              <span style="font-weight: bold; color: #e5345b"
+                >{{ product.cart_quantity }}</span
+              >
+            </p>
+
+            {% set line = 'text-decoration: line-through;' if product.deal != 0
+            %}
+
+            <span class="fw-bold no_longer">
+              {% if product.deal != 0 %}
+              <span style="text-decoration: line-through; margin-right: 10px"
+                >$ {{ product.price }}</span
+              >
+              <span style="color: #e5345b; font-size: 16px"
+                >$ {{ product.new_price }}</span
+              >
+              {% else %} $ {{ product.price }} {% endif %}
+            </span>
+
+            <form
+              method="POST"
+              action="{{ url_for('views.cart') }}#form-section{{ i }}"
+            >
+              <div
+                class="input-group mt-3 mb-2"
+                style="max-width: 90%; margin: auto"
+              >
+                <input
+                  type="hidden"
+                  id="product_id"
+                  name="product_id"
+                  value="{{ product.id }}"
+                />
+                <button
+                  type="submit"
+                  class="btn col-9"
+                  style="
+                    border-top-left-radius: 25px;
+                    border-bottom-left-radius: 25px;
+                    font-size: 14px;
+                  "
+                >
+                  Comprar
+                </button>
+                <select
+                  class="form-select text-center col"
+                  style="
+                    border-top-right-radius: 25px;
+                    border-bottom-right-radius: 25px;
+                  "
+                  id="product_quantity"
+                  name="product_quantity"
+                >
+                  {% for quantity in range(1, product.quantity + 1) %}
+                  <option value="{{ quantity }}">{{ quantity }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </form>
+
+            <form
+              method="POST"
+              action="{{ url_for('views.delete_from_cart') }}#form-section{{ i }}"
+            >
+              <div
+                class="input-group mb-2"
+                style="max-width: 90%; margin: auto"
+              >
+                <input
+                  type="hidden"
+                  id="product_id_del"
+                  name="product_id_del"
+                  value="{{ product.id }}"
+                />
+                <button
+                  type="submit"
+                  class="btn col-9"
+                  style="
+                    border-top-left-radius: 25px;
+                    border-bottom-left-radius: 25px;
+                    font-size: 14px;
+                  "
+                >
+                  Eliminar
+                </button>
+                <select
+                  class="form-select text-center col"
+                  style="
+                    border-top-right-radius: 25px;
+                    border-bottom-right-radius: 25px;
+                  "
+                  id="product_quantity_del"
+                  name="product_quantity_del"
+                >
+                  {% for option in range(1, product.cart_quantity + 1) %}
+                  <option value="{{ option }}">{{ option }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
       </div>
     </div>
-    {% endfor %}
   </div>
-</div>
+</section>
 
 <div class="title text-center my-2">
   <h3 class="position-relative mt-2">Monto total a debitar</h3>
-  <h1 class="position-relative mb-1 py-2" style="font-weight: bold; color: #e5345b">${{ total_price }}</h1>
-  <button
-          type="button"
-          class="btn m-1 mb-5 mt-2"
-        >
-        Pagar ahora
-  </button>
+  <h1
+    class="position-relative mb-1 py-2"
+    style="font-weight: bold; color: #e5345b"
+  >
+    ${{ total_price }}
+  </h1>
+  <button type="button" class="btn m-1 mb-5 mt-2">Pagar ahora</button>
 </div>
 
 {% endblock %}

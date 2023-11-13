@@ -1,15 +1,17 @@
 {% extends "base.html" %} {% block title %}Me gustan{% endblock %} {% block
-    content %}
+content %}
 
-    <div class="title text-center" style="padding-top: 170px">
-        <h2 class="position-relative d-inline-block">
-          Productos que te han gustado
-        </h2>
-    </div>
-      
-    <div class="row g-0 mb-5">
+<section id="collection" class="py-5 mt-5">
+  <div class="title text-center" style="padding-top: 70px">
+    <h2 class="position-relative d-inline-block">
+      Productos que te han gustado
+    </h2>
+  </div>
+
+  <div class="container">
+    <div class="row g-0">
       <div
-        class="d-flex flex-wrap justify-content-center mt-5 filter-button-group"
+        class="d-flex flex-wrap justify-content-center mt-3 filter-button-group"
       >
         <button
           type="button"
@@ -18,38 +20,39 @@
         >
           Todo
         </button>
+        {% for main_tag in main_tags %}
         <button
           type="button"
-          class="btn m-1 text-dark"
-          data-filter=".textileria"
+          class="btn m-1 text-dark text-capitalize"
+          data-filter=".{{ main_tag.tag_name }}"
         >
-          Textilería
+          {{ main_tag.tag_name }}
         </button>
-        <button type="button" class="btn m-1 text-dark" data-filter=".alimento">
-          Alimentos
-        </button>
-        <button
-          type="button"
-          class="btn m-1 text-dark"
-          data-filter=".tecnologia"
-        >
-          Tecnología
-        </button>
+        {% endfor %}
         <button type="button" class="btn m-1 text-dark" data-filter=".oferta">
           Ofertas
         </button>
       </div>
 
       <div class="collection-list mt-4 row gx-0 gy-3">
-        {% for product in products%} {% set i = product.id %}
+        {% for product in products %} {% set i = product.id %}
         <div
-          class="col-md-6 col-lg-4 col-xl-3 p-2 {{ product.filter }} {% if product.deal != 0 %} oferta {% endif %}"
+          class="col-3 shadow bg-body p-3 m-2 rounded {% for tag in product.tags_info %}{{ tag.tag_name }} {% endfor %} {% if product.deal != 0 %} oferta {% endif %}"
         >
           <a name="form-section{{ i }}"></a>
           <div class="collection-img position-relative">
+            {% if product.quantity == 0 %}
+            <div class="sold-out-overlay">
+              <img
+                src="{{ url_for('static', filename='images/agotado.png') }}"
+                alt="Sold Out"
+              />
+            </div>
+            {% endif %}
             <img
-              src="data:image/jpeg;base64,{{ product.image }} "
-              style="height: 300px; width: 300px"
+              src="data:image/jpeg;base64,{{ product.image }}"
+              style="height: 260px; width: 100%"
+              alt="{{ product.product }}"
             />
 
             <form
@@ -70,8 +73,8 @@
                   class="btn-outline-none heart-icon"
                   style="
                     color: #e5345b;
-                    border-color: rgb(255, 255, 255, 0);
-                    background-color: rgb(255, 255, 255, 0);
+                    border-color: transparent;
+                    background-color: transparent;
                   "
                   data-product-id="{{ product.id }}"
                 >
@@ -91,31 +94,20 @@
             {% if product.deal != 0 %}
             <span
               class="position-absolute bg-primary text-white d-flex align-items-center justify-content-center deal-thing"
-              >oferta! -{{ product.deal }}%
+            >
+              Oferta -{{ product.deal }}%
             </span>
             {% endif %}
           </div>
-          <div class="text-center">
-            <p class="text-capitalize my-1 mt-3">{{ product.product }}</p>
 
-            {% set line = 'text-decoration: line-through;' if product.deal != 0
-            %}
-
-            <span class="fw-bold no_longer">
-              {% if product.deal != 0 %}
-              <span style="text-decoration: line-through; margin-right: 10px"
-                >$ {{ product.price }}</span
-              >
-              <span style="color: #e5345b; font-size: 20px"
-                >$ {{ product.new_price }}</span
-              >
-              {% else %} $ {{ product.price }} {% endif %} </span
-            >
-            
+          <div class="text-center mt-3">
+            <p class="text-capitalize mb-1">{{ product.product }}</p>
           </div>
         </div>
         {% endfor %}
       </div>
     </div>
+  </div>
+</section>
 
 {% endblock %}

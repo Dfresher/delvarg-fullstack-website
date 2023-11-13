@@ -1,44 +1,80 @@
-{% extends "base.html" %} {% block title %}Preguntas Frecuentes{% endblock %} {% block
-    content %}
-    
-    <h1 style="padding-top: 170px">Preguntas Frecuentes</h1>
-    <div class="accordion my-5" id="accordionFaq">
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-              ¿Como puedo registrarme?
-            </button>
-          </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionFaq">
-            <div class="accordion-body">
-              Navega hacia la pagina de registro de usuarios y rellena todos los campos. Luego haz clic en el boton "Aceptar". 
-            </div>
-          </div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              ¿Como cambiar mi contraseña?
-            </button>
-          </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFaq">
-            <div class="accordion-body">
-              No puedes en esta version de la pagina web :) 
-            </div>
-          </div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-              ¿Como quito un producto de mi carrito de compras?
-            </button>
-          </h2>
-          <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFaq">
-            <div class="accordion-body">
-              Navega hacia la pagina de carrito de compras y haz clic en el boton "Eliminar" justo abajo del producto que quieras eliminar.
-            </div>
-          </div>
-        </div>
+{% extends "base.html" %} {% block title %}Preguntas Frecuentes{% endblock %} {%
+block content %}
+
+<h1 style="padding-top: 170px">Preguntas Frecuentes</h1>
+<div class="accordion my-5" id="accordionFaq">
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button
+        class="accordion-button"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseOne"
+        aria-expanded="false"
+        aria-controls="collapseOne"
+      >
+        ¿Como puedo registrarme?
+      </button>
+    </h2>
+    <div
+      id="collapseOne"
+      class="accordion-collapse collapse show"
+      data-bs-parent="#accordionFaq"
+    >
+      <div class="accordion-body">
+        Navega hacia la pagina de registro de usuarios y rellena todos los
+        campos. Luego haz clic en el boton "Aceptar".
       </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseTwo"
+        aria-expanded="false"
+        aria-controls="collapseTwo"
+      >
+        ¿Como cambiar mi contraseña?
+      </button>
+    </h2>
+    <div
+      id="collapseTwo"
+      class="accordion-collapse collapse"
+      data-bs-parent="#accordionFaq"
+    >
+      <div class="accordion-body">
+        Haz clic <a href="{{ url_for('auth.change_password') }}">aqui</a> y
+        llena el formulario
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseThree"
+        aria-expanded="false"
+        aria-controls="collapseThree"
+      >
+        ¿Como quito un producto de mi carrito de compras?
+      </button>
+    </h2>
+    <div
+      id="collapseThree"
+      class="accordion-collapse collapse"
+      data-bs-parent="#accordionFaq"
+    >
+      <div class="accordion-body">
+        Navega hacia la pagina de carrito de compras y haz clic en el boton
+        "Eliminar" justo abajo del producto que quieras eliminar.
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

@@ -13,11 +13,11 @@ block content %}
       <p class="card-text">Email: {{ user.email }}</p>
       <form method="POST">
         <input
-              type="hidden"
-              id="user_id"
-              name="user_id"
-              value="{{ user.id }}"
-            />
+          type="hidden"
+          id="user_id"
+          name="user_id"
+          value="{{ user.id }}"
+        />
         <button type="submit" class="btn btn-danger">Eliminar usuario</button>
       </form>
     </div>

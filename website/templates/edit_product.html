@@ -1,54 +1,177 @@
-{% extends "base.html" %} 
-{% block title %}Editar producto{% endblock %} 
-{% block content %}
+{% extends "base.html" %} {% block title %}Editar productos{% endblock %} {%
+block content %}
 
-<div class="container" style="padding-top: 140px;"></div>
-<h2 class="text-center my-4">Editar productos</h2>
+<div class="container my-5" style="padding-top: 120px">
+  <h2 class="text-center mb-4">Editar productos</h2>
 
-<div class="row">
+  <div class="row">
     {% for product in products %}
-    <div class="col-md-4">
-        <form method="POST" enctype="multipart/form-data" class="py-2">
-            <input type="hidden" name="product_id" id="product_id" value="{{ product.id }}">
-            
-            <div class="mb-3">
-                <label for="product_image" class="form-label">Imagen del producto:</label><br>
-                <img src="data:image/jpeg;base64,{{ product.image }}" class="img-fluid mb-2" style="height: 200px; width: auto" alt="Producto" />
-                <input type="file" class="form-control" id="product_image" name="product_image">
-            </div>
-            
-            <div class="mb-3">
-                <label for="product_name" class="form-label">Nombre del producto:</label>
-                <input type="text" class="form-control" id="product_name" name="product_name" value="{{ product.product }}">
-            </div>
+    <div class="col-md-6 mb-4 shadow p-3 mb-5 bg-body rounded">
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        class="py-2 product_form"
+      >
+        <input type="hidden" name="product_id" value="{{ product.id }}" />
 
-            <div class="mb-3">
-                <label for="product_category" class="form-label">Categoría del producto:</label>
-                <select class="form-select" id="product_filter" name="product_filter">
-                    <option value="textileria" {% if product.filter == 'textileria' %}selected{% endif %}>Textilería</option>
-                    <option value="alimento" {% if product.filter == 'alimento' %}selected{% endif %}>Alimentos</option>
-                    <option value="tecnologia" {% if product.filter == 'tecnologia' %}selected{% endif %}>Tecnología</option>
-                </select>
-            </div>
+        <div class="mb-3">
+          <img
+            src="data:image/jpeg;base64,{{ product.image }}"
+            class="img-fluid mx-auto d-block mb-2"
+            style="height: 250px; width: auto"
+            alt="Producto"
+          />
+          <label for="product_image" class="form-label"
+            >Imagen del producto:</label
+          >
+          <input
+            type="file"
+            class="form-control"
+            id="product_image"
+            name="product_image"
+          />
+        </div>
 
-            <div class="mb-3">
-                <label for="product_price" class="form-label">Precio del producto:</label>
-                <input type="number" class="form-control" id="product_price" name="product_price" value="{{ product.price }}">
-            </div>
+        <div class="mb-3">
+          <label for="product_name" class="form-label"
+            >Nombre del producto:</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="product_name"
+            name="product_name"
+            value="{{ product.product }}"
+          />
+        </div>
 
-            <div class="mb-3">
-                <label for="product_deal" class="form-label">Descuento (%):</label>
-                <input type="number" class="form-control" id="product_deal" name="product_deal" value="{{ product.deal }}">
-            </div>
+        <div class="row mb-3">
+          <div class="col">
+            <label for="product_main_tag" class="form-label"
+              >Etiqueta principal:</label
+            >
+            <select
+              class="form-select product-main-tag"
+              name="product_main_tag"
+              id="product_main_tag"
+            >
+              <option value="" disabled selected>
+                Selecciona una etiqueta principal
+              </option>
+              {% for main_tag in main_tags %} 
+                <option value="{{ main_tag.id }}" {% if product.tags_info and product.tags_info[0] == main_tag %} selected {% endif %}>
+                  {{ main_tag.tag_name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <label for="product_secondary_tag" class="form-label"
+              >Etiqueta secundaria:</label
+            >
+            <select
+              class="form-select product-secondary-tag"
+              name="product_secondary_tag"
+              id="product_secondary_tag"
+            >
+            {% if product.tags_info and product.tags_info|length > 1 %}
+                {% for secondary_tag in product.tags_info[1:] %}
+                    <option value="{{ secondary_tag.id }}" {% if product.selected_secondary_tag_id == secondary_tag.id %} selected {% endif %}>
+                        {{ secondary_tag.tag_name }}
+                    </option>
+                {% endfor %}
+            {% else %}
+                <option value="N/A" selected>No disponible</option>
+            {% endif %}
+            </select>
+          </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-        </form>
-        <form method="POST" action="{{ url_for('views.delete_product') }}" class="pb-5">
-            <input type="hidden" name="product_id" id="product_id" value="{{ product.id }}">
-            <button type="submit" class="btn btn-danger">Eliminar producto</button>
-        </form>
+        <div class="row mb-3">
+          <div class="col">
+            <label for="product_price" class="form-label"
+              >Precio del producto:</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="product_price"
+              name="product_price"
+              value="{{ product.price }}"
+            />
+          </div>
+          <div class="col">
+            <label for="product_deal" class="form-label">Descuento (%):</label>
+            <input
+              type="number"
+              class="form-control"
+              id="product_deal"
+              name="product_deal"
+              value="{{ product.deal }}"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="product_quantity" class="form-label">Cantidad:</label>
+          <input
+            type="number"
+            class="form-control"
+            name="product_quantity"
+            id="product_quantity"
+            value="{{ product.quantity }}"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      </form>
+
+      <form method="POST" action="{{ url_for('views.delete_product') }}">
+        <input
+          type="hidden"
+          name="product_id"
+          id="product_id"
+          value="{{ product.id }}"
+        />
+        <button type="submit" class="btn btn-danger mt-2">
+          Eliminar producto
+        </button>
+      </form>
     </div>
     {% endfor %}
+  </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var productForms = document.querySelectorAll(".product_form");
+
+    productForms.forEach(function (form) {
+      form.addEventListener("change", function (event) {
+        var target = event.target;
+        var productId = form.querySelector('[name="product_id"]').value;
+
+        if (target.classList.contains("product-main-tag")) {
+          var mainTagId = target.value;
+          var secondaryTagSelect = form.querySelector(".product-secondary-tag");
+
+          secondaryTagSelect.innerHTML =
+            '<option value="" disabled selected>Selecciona una etiqueta secundaria</option>';
+
+          fetch(`/get_secondary_tags/${mainTagId}`)
+            .then((response) => response.json())
+            .then((data) => {
+              data.secondary_tags.forEach((tag) => {
+                var option = document.createElement("option");
+                option.value = tag.id;
+                option.textContent = tag.tag_name;
+                secondaryTagSelect.appendChild(option);
+              });
+            });
+        }
+      });
+    });
+  });
+</script>
 
 {% endblock %}
