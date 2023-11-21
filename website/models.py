@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
-    username = db.Column(db.String(150))
+    username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(150))
     cart_info = db.relationship("Cart")
     heart_info = db.relationship("Heart")

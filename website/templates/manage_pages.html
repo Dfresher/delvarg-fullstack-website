@@ -1,12 +1,76 @@
-{% extends "base.html" %} {% block title %}Administrador{% endblock %} {% block
-content %}
+{% extends "base.html" %} 
+{% block title %} Administración de páginas {% endblock %} 
 
-<h3 class="text-center" style="padding-top: 140px">
-  Administración de las paginas
-</h3>
-<h4 class="my-5 text-center">
-  Administracion de etiquetas asociadas con paginas, y el carusel especifico de
-  dichas paginas
-</h4>
+{% block content %}
+<div class="container py-5">
+  <h3 class="text-center mb-4" style="padding-top: 110px;">Administración de las Páginas</h3>
 
+  <div class="mb-4">
+    <h5> Páginas existentes:</h5>
+    <div class="list-group">
+      {% for page in pages %}
+        <a href="#" class="list-group-item list-group-item-action">
+          {{ page.text }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div>
+    <h5>Crear Nueva Página:</h5>
+    <form method="POST" action="{{ url_for('views.manage_pages') }}" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label for="product_image" class="form-label">Imagen:</label>
+        <input
+          type="file"
+          class="form-control"
+          name="image"
+          id="image"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="text" class="form-label">Texto:</label>
+        <input type="text" class="form-control" id="text" name="text" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="main_text" class="form-label">Texto Principal:</label>
+        <input type="text" class="form-control" id="main_text" name="main_text" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="button" class="form-label">Texto del Botón:</label>
+        <input type="text" class="form-control" id="button" name="button" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="link" class="form-label">Enlace:</label>
+        <select class="form-select text-capitalize" id="link" name="link" required>
+          {% for tag in tags %}
+            <option value="url_for('views.branches', main_tag_id={{ tag.id }}">{{ tag.tag_name }}</option>
+          {% endfor %}
+          <option value="url_for('views.sign_up')">Registrarse</option>
+          <option value="url_for('views.cart')">Carrito</option>
+          <option value="url_for('views.faq')">Preguntas frecuentes</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="tag_id" class="form-label">Etiqueta Principal:</label>
+        <select class="form-select text-capitalize" id="tag_id" name="tag_id">
+          <option value="N/A" disabled selected>
+            Selecciona una Etiqueta
+          </option>
+          {% for tag in tags %}
+            <option value="{{ tag.id }}">{{ tag.tag_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Guardar Página</button>
+    </form>
+  </div>
+</div>
 {% endblock %}

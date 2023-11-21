@@ -14,6 +14,8 @@ Para ser capaz de correr apropiadamente esta aplicación necesitaras instalar ci
   
   -La implementación de SQL Alchemy en Flask (Entra en la terminal de Windows o VScode y escribe 'pip install flask-sqlalchemy')
 
+  -El SDK de PayPal para manejar transacciones (Entra en la terminal de Windows o VScode y escribe 'pip install paypalrestsdk')
+
 
 Una vez hecho todo esto abre el archivo "main.py" y correlo. 
 

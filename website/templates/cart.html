@@ -9,30 +9,7 @@ block content %}
   </div>
 
   <div class="container">
-    <div class="row g-0">
-      <div
-        class="d-flex flex-wrap justify-content-center mt-3 filter-button-group"
-      >
-        <button
-          type="button"
-          class="btn m-1 text-dark active-filter-btn"
-          data-filter="*"
-        >
-          Todo
-        </button>
-        {% for main_tag in main_tags %}
-        <button
-          type="button"
-          class="btn m-1 text-dark text-capitalize"
-          data-filter=".{{ main_tag.tag_name }}"
-        >
-          {{ main_tag.tag_name }}
-        </button>
-        {% endfor %}
-        <button type="button" class="btn m-1 text-dark" data-filter=".oferta">
-          Ofertas
-        </button>
-      </div>
+    
 
       <div class="collection-list mt-4 row gx-0 gy-3">
         {% for product in products %} {% set i = product.id %}
@@ -167,15 +144,91 @@ block content %}
   </div>
 </section>
 
-<div class="title text-center my-2">
-  <h3 class="position-relative mt-2">Monto total a debitar</h3>
-  <h1
-    class="position-relative mb-1 py-2"
-    style="font-weight: bold; color: #e5345b"
-  >
-    ${{ total_price }}
-  </h1>
-  <button type="button" class="btn m-1 mb-5 mt-2">Pagar ahora</button>
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentModalLabel">Métodos de Pago</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <p>Seleccione su método de pago:</p>
+        <div>
+          <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+          <label for="paypal">Tarjeta de crédito o PayPal.</label>
+        </div>
+        <div>
+          <input type="radio" id="email" name="paymentMethod" value="email">
+          <label for="email">Mándanos un correo con tu pedido.</label>
+        </div>
+        <div>
+          <input type="radio" id="whatsapp" name="paymentMethod" value="whatsapp">
+          <label for="whatsapp">Contáctanos por WhatsApp.</label>
+        </div>
+
+      </div>
+      <form id="paymentForm" method="post" action="/process_payment" style="display: none;">
+        <input type="hidden" id="totalPriceField" name="total_price" value="{{ total_price }}">
+        <input type="hidden" id="paymentMethodField" name="payment_method">
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="processPayment()">Pagar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentModalLabel">Métodos de Pago</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Información de transferencia:</p>
+        <ul>
+          <li>Número de cuenta: 0102 0256 6500 0060 0277.</li>
+          <li>Tipo de cuenta: Corriente.</li>
+          <li>Número de cedula: V-30.818.483.</li>
+          <li>Número de telefono: 0424-158-4946.</li>
+        </ul>
+        <p>Envíanos un capture de la transferencia o <br> de los últimos 4 dígitos de la misma.</p>
+      </div>
+      <form id="paymentForm" method="post" action="/process_payment" style="display: none;">
+        <input type="hidden" id="totalPriceField" name="total_price" value="{{ total_price }}">
+        <input type="hidden" id="paymentMethodField" name="payment_method">
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="title text-center">
+  <h3 class="position-relative mt-2">Monto total a debitar</h3>
+  <h1 class="position-relative mb-1 py-2" style="font-weight: bold; color: #e5345b">${{ total_price }}</h1>
+  <button type="button" class="btn m-1 mb-1 mt-2" data-bs-toggle="modal" data-bs-target="#paymentModal">Comprar ahora</button>
+</div>
+
+<div class="title text-center">
+  <button type="button" class="btn m-1 mb-5 mt-1" data-bs-toggle="modal" data-bs-target="#infoModal">Transferencia o Pago Móvil</button>
+</div>
+
+<script>
+  function processPayment() {
+    var selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+  
+    if (selectedPaymentMethod) {
+      document.getElementById('paymentMethodField').value = selectedPaymentMethod.value;
+      document.getElementById('paymentForm').submit();
+    } else {
+      alert('Seleccione un método de pago');
+    }
+  }
+</script>
 
 {% endblock %}
