@@ -166,15 +166,24 @@ def change_password():
 def process_payment():
   payment_method = request.form.get('payment_method')
   total_price = request.form.get('total_price')
-  if payment_method == 'paypal':
-    return redirect(url_for('auth.paypal_checkout', total_price=total_price))
-  if payment_method == 'email':
-    return redirect(url_for('auth.email_checkout', total_price=total_price))
-  if payment_method == 'whatsapp':
-    return redirect(url_for('auth.whatsapp_checkout', total_price=total_price))
+  cart_items = db.session.query(
+      Cart,
+      Product).join(Product).filter(Cart.user_id == current_user.id).all()
+  
+  if cart_items:
+    if payment_method == 'paypal':
+      return redirect(url_for('auth.paypal_checkout', total_price=total_price))
+    if payment_method == 'email':
+      return redirect(url_for('auth.email_checkout', total_price=total_price))
+    if payment_method == 'whatsapp':
+      return redirect(url_for('auth.whatsapp_checkout', total_price=total_price))
+    else:
+      flash("Algo salio mal :(", "danger")
+      return redirect(url_for("views.cart"))
   else:
-    flash("Algo salio mal :(", "danger")
-    return redirect(url_for("views.cart"))
+    flash("Selecciona un producto para añadir al carrito.", "danger")
+  return redirect(url_for("views.home"))
+  
 
 
 @auth.route("/paypal_checkout/<total_price>")
@@ -224,34 +233,12 @@ def paypal_checkout(total_price):
 
     return redirect(url_for('views.cart'))
   else:
-    flash("Payment creation failed", "danger")
+    flash("Creación de pago fallida.", "danger")
     return redirect(url_for('views.home'))
   
 
 @auth.route("/success")
-def success():
-  cart_items = db.session.query(
-      Cart,
-      Product).join(Product).filter(Cart.user_id == current_user.id).all()
-
-  for cart_item in cart_items:
-    product = cart_item.Product
-    product.quantity -= cart_item.Cart.quantity
-    
-  Cart.query.filter_by(user_id=current_user.id).delete()
-  db.session.commit()
-
-  flash("¡Gracias por preferirnos!", "success")
-  return redirect(url_for("views.cart"))
-
-
-@auth.route("/cancel")
-def cancel():
-  return redirect(url_for("views.cart"))
-
-
-@auth.route('/email_checkout/<total_price>')
-def email_checkout(total_price):
+def success():  
   user = User.query.filter_by(id=current_user.id).first()
   client_email = user.email
   my_email = "donfernandogm@gmail.com"
@@ -265,10 +252,81 @@ def email_checkout(total_price):
       for cart_item in cart_items
   ]
 
+  total_price = 0.0
+
+  for cart_item in cart_items:
+      if cart_item.Cart.quantity > 0:
+          product = Product.query.get(cart_item.Product.id)
+
+          item_price = float(
+              product.price * (1 - product.deal / 100) if product.deal != 0 else product.price
+          ) * cart_item.Cart.quantity
+
+          total_price += item_price
+
+  total_price = "{:.2f}".format(total_price)
+
   transaction_description = ", ".join(item_descriptions)
   transaction_amount = float(total_price)
 
-  message = f"Se ha realizado una compra con los siguientes detalles: Descripción: {transaction_description}, Monto: ${transaction_amount:.2f}. Por favor, revise los detalles de la transacción."
+  message = f"Se ha realizado una compra con los siguientes detalles: Descripción: {transaction_description}, Monto: ${transaction_amount:.2f}. Estaremos en contacto para la entrega de sus productos o la planificación de sus servicios."
+
+  msg = MIMEMultipart('alternative')
+  msg['Subject'] = subject
+  msg['From'] = my_email
+  msg['To'] = client_email
+
+  part1 = MIMEText(message, 'plain')
+
+  msg.attach(part1)
+
+  try:
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login('donfernandogm@gmail.com', 'zuzb xxbp pvum yzeb')
+
+    server.sendmail(client_email, my_email, msg.as_string())
+    server.quit()
+
+    Cart.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
+    
+    for cart_item in cart_items:
+      product = cart_item.Product
+      product.quantity -= cart_item.Cart.quantity
+      
+    flash("¡Gracias por preferirnos!", "success")
+    return redirect(url_for("views.cart"))
+  except Exception as e:
+    flash(f"Error al enviar el correo. Error: {str(e)}", "danger")
+    return redirect(url_for('views.cart'))
+
+
+
+@auth.route("/cancel")
+def cancel():
+  return redirect(url_for("views.cart"))
+
+
+@auth.route('/email_checkout/<total_price>')
+def email_checkout(total_price):
+  user = User.query.filter_by(id=current_user.id).first()
+  client_email = user.email
+  my_email = "donfernandogm@gmail.com"
+  subject = f"Solicitud de pedido para {user.username}"
+  cart_items = db.session.query(
+      Cart,
+      Product).join(Product).filter(Cart.user_id == current_user.id).all()
+
+  item_descriptions = [
+      f"{cart_item.Cart.quantity} {cart_item.Product.product}"
+      for cart_item in cart_items
+  ]
+
+  transaction_description = ", ".join(item_descriptions)
+  transaction_amount = float(total_price)
+
+  message = f"Se ha realizado una solicitud de compra con los siguientes detalles: Descripción: {transaction_description}, Monto: ${transaction_amount:.2f}. Considere llevar a cabo el pago a través de nuestra pagina web, o contactenos en caso de tener alguna duda o pregunta acerca de la transación."
 
   msg = MIMEMultipart('alternative')
   msg['Subject'] = subject

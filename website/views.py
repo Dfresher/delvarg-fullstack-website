@@ -125,7 +125,7 @@ def get_existing_cart_quantity(user_id, product_id):
   return existing_cart_entry.quantity if existing_cart_entry else 0
 
 
-@views.route("/add_to_cart", methods=["POST"])
+@views.route("/add_to_cart", methods=["GET", "POST"])
 @login_required
 def add_to_cart():
   product_id = request.form.get("product_id")
@@ -261,7 +261,8 @@ def cart():
       item_price = (float(product_copy.new_price if product_copy.deal != 0 else
                           product_copy.price) * cart_entry.quantity)
       total_price += item_price
-
+  
+  total_price="{:.2f}".format(total_price)
   total_quantity = (db.session.query(func.sum(
       Cart.quantity)).filter_by(user_id=user_id).scalar() or 0)
 

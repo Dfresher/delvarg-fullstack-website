@@ -34,6 +34,24 @@ content %}
           %}</a
         >
       </div>
+    </div>    
+    <div class="carousel-item">
+      <img
+        src="{{ url_for('static', filename='images/banner_textileria.jpg') }}"
+        class="d-block w-100"
+        alt="Moda"
+      />
+      <div class="carousel-caption d-none d-md-block">
+        <h2 class="text-white text-with-shadow">Elegancia y confort en</h2>
+        <h1 class="text-uppercase py-2 fw-bold text-white text-with-shadow">
+          textilería
+        </h1>
+        <a
+          href="{{ url_for('views.branches', main_tag_id=1) }}"
+          class="btn mt-3 text-uppercase"
+          >explorar</a
+        >
+      </div>
     </div>
     <div class="carousel-item">
       <img
@@ -48,24 +66,6 @@ content %}
         </h1>
         <a
           href="{{ url_for('views.branches', main_tag_id=2) }}"
-          class="btn mt-3 text-uppercase"
-          >explorar</a
-        >
-      </div>
-    </div>
-    <div class="carousel-item">
-      <img
-        src="{{ url_for('static', filename='images/banner_textileria.jpg') }}"
-        class="d-block w-100"
-        alt="Moda"
-      />
-      <div class="carousel-caption d-none d-md-block">
-        <h2 class="text-white text-with-shadow">Elegancia y confort en</h2>
-        <h1 class="text-uppercase py-2 fw-bold text-white text-with-shadow">
-          textilería
-        </h1>
-        <a
-          href="{{ url_for('views.branches', main_tag_id=1) }}"
           class="btn mt-3 text-uppercase"
           >explorar</a
         >
@@ -154,6 +154,7 @@ content %}
         <button type="button" class="btn m-1 text-dark" data-filter=".oferta">
           Ofertas
         </button>
+
       </div>
 
       <div class="collection-list mt-4 row gx-0 gy-3">
@@ -242,8 +243,9 @@ content %}
             <form
               method="POST"
               action="{{ url_for('views.add_to_cart') }}#form-section{{ i }}"
+              style="max-width: 90%; margin: auto"
             >
-              <div class="input-group m-3" style="max-width: 90%; margin: auto">
+              <div class="input-group m-3">
                 <input
                   type="hidden"
                   id="product_id"
