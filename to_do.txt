@@ -1,14 +1,8 @@
 -mejor resposiveness, especialmente en home.html
 
--agregar paginas distintas para cada rama de la empresa, dejando home.html como una landing page y solo con productos populares
-    bastante complejo
-      pero se veria y sentiria bastante bien
-
--sistema de pago y recibo online
-
--servidores para mantener una base de datos de productos actualizada
-
 -blogs reales :O
+
+-literally the rest of the page, although not that important
 
 -???
 
