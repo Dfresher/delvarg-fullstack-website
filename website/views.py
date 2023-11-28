@@ -659,6 +659,7 @@ def tags():
   if request.method == "POST":
     if "main_tag" in request.form:
       main_tag_name = request.form["main_tag"].lower()
+      main_tag_name.replace(" ", "_")
       if (Tags.query.filter_by(tag_name=main_tag_name,
                                parent_tag_id=None).first() is None):
         new_main_tag = Tags(tag_name=main_tag_name)

@@ -108,8 +108,8 @@ body {
 
 /* collection */
 .collection-list .col-3 {
-  flex: 0 0 23%;
-  max-width: 23%;
+  flex: 0 0 23% !important;
+  max-width: 23% !important;
   text-align: center;
 }
 .active-filter-btn {
@@ -233,13 +233,15 @@ footer a:hover {
   .nav-item {
     border-bottom: none;
   }
-  .header {
-    height: 50vh;
-    padding-top: 50px;
+
+  .collection-list .col-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
   }
 }
 
 @media (max-width: 767px) {
+
   .collection-list .col-3 {
     flex: 0 0 100%;
     max-width: 100%;

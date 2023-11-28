@@ -19,9 +19,28 @@
           </span>
         </div>
         <div class="text-center">
-          <p class="text-capitalize mt-3 mb-1">pantalon beige</p>
-          <span class="fw-bold d-block">$ 25.00</span>
-          <a href="#" class="btn btn-primary mt-3">Añadir al Carrito</a>
+          <p class="text-capitalize mt-3 mb-1">pantalones beige</p>
+          <span class="fw-bold d-block">$ 38.00</span>
+          <form
+            method="POST"
+            action="{{ url_for('views.add_to_cart') }}#special"
+          >
+            <div class="m-3" style="margin: auto">
+              <input
+                type="hidden"
+                id="product_id"
+                name="product_id"
+                value="6"
+              />
+              <input
+                type="hidden"
+                id="product_quantity"
+                name="product_quantity"
+                value="1"
+              />
+              <button type="submit" class="btn col-9">Añadir al Carrito</button>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -39,8 +58,27 @@
         </div>
         <div class="text-center">
           <p class="text-capitalize mt-3 mb-1">vestido vinotinto</p>
-          <span class="fw-bold d-block">$ 30.00</span>
-          <a href="#" class="btn btn-primary mt-3">Añadir al Carrito</a>
+          <span class="fw-bold d-block">$ 46.99</span>
+          <form
+            method="POST"
+            action="{{ url_for('views.add_to_cart') }}#special"
+          >
+            <div class="m-3" style="margin: auto">
+              <input
+                type="hidden"
+                id="product_id"
+                name="product_id"
+                value="8"
+              />
+              <input
+                type="hidden"
+                id="product_quantity"
+                name="product_quantity"
+                value="1"
+              />
+              <button type="submit" class="btn col-9">Añadir al Carrito</button>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -57,9 +95,28 @@
           </span>
         </div>
         <div class="text-center">
-          <p class="text-capitalize mt-3 mb-1">chaqueta de denim</p>
-          <span class="fw-bold d-block">$ 40.00</span>
-          <a href="#" class="btn btn-primary mt-3">Añadir al Carrito</a>
+          <p class="text-capitalize mt-3 mb-1">chaqueta denim</p>
+          <span class="fw-bold d-block">$ 59.99</span>
+          <form
+            method="POST"
+            action="{{ url_for('views.add_to_cart') }}#special"
+          >
+            <div class="m-3" style="margin: auto">
+              <input
+                type="hidden"
+                id="product_id"
+                name="product_id"
+                value="2"
+              />
+              <input
+                type="hidden"
+                id="product_quantity"
+                name="product_quantity"
+                value="1"
+              />
+              <button type="submit" class="btn col-9">Añadir al Carrito</button>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -77,8 +134,27 @@
         </div>
         <div class="text-center">
           <p class="text-capitalize mt-3 mb-1">vestido negro</p>
-          <span class="fw-bold d-block">$ 28.00</span>
-          <a href="#" class="btn btn-primary mt-3">Añadir al Carrito</a>
+          <span class="fw-bold d-block">$ 36.00</span>
+          <form
+            method="POST"
+            action="{{ url_for('views.add_to_cart') }}#special"
+          >
+            <div class="m-3" style="margin: auto">
+              <input
+                type="hidden"
+                id="product_id"
+                name="product_id"
+                value="11"
+              />
+              <input
+                type="hidden"
+                id="product_quantity"
+                name="product_quantity"
+                value="1"
+              />
+              <button type="submit" class="btn col-9">Añadir al Carrito</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -102,7 +178,7 @@
   </div>
 </section>
 
-<!-- blogs -->
+<!-- blogs 
 <section id="blogs" class="py-5">
   <div class="container">
     <div class="title text-center py-5">
@@ -121,9 +197,7 @@
           </h4>
           <p class="card-text mt-3 text-muted">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet
-            aspernatur repudiandae nostrum dolorem molestias odio. Sit fugit
-            adipisci omnis quia itaque ratione iusto sapiente reiciendis,
-            numquam officiis aliquid ipsam fuga.
+            aspernatur repudiandae nostrum dolorem molestias odio.
           </p>
           <p class="card-text">
             <small class="text-muted">
@@ -143,8 +217,7 @@
             Enterate de 10 ventajas de las compras impulsivas
           </h4>
           <p class="card-text mt-3 text-muted">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet
-            aspernatur repudiandae nostrum dolorem molestias odio. Sit fugit
+            Sit fugit
             adipisci omnis quia itaque ratione iusto sapiente reiciendis,
             numquam officiis aliquid ipsam fuga.
           </p>
@@ -166,10 +239,8 @@
             Manten una sonrisa al gastar tu quincena con estos tips
           </h4>
           <p class="card-text mt-3 text-muted">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet
-            aspernatur repudiandae nostrum dolorem molestias odio. Sit fugit
-            adipisci omnis quia itaque ratione iusto sapiente reiciendis,
-            numquam officiis aliquid ipsam fuga.
+            Aliquid corporis recusandae atque ab. Ullam facere odio nemo? Nobis atque recusandae est quod
+             totam eveniet temporibus, blanditiis voluptas! Id, doloribus assumenda!
           </p>
           <p class="card-text">
             <small class="text-muted">
@@ -182,6 +253,7 @@
     </div>
   </div>
 </section>
+-->
 
 <!-- about us -->
 <section id="about" class="py-5">
